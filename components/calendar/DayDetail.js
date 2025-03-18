@@ -3,32 +3,29 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  ScrollView, 
-  TouchableOpacity,
-  Linking
+  TouchableOpacity, 
+  ScrollView 
 } from 'react-native';
-import { format, isSameDay } from 'date-fns';
-import { de } from 'date-fns/locale';
 import { 
   Calendar, 
   Clock, 
   MapPin, 
   Users, 
-  CalendarDays,
-  X
+  CalendarDays 
 } from 'react-native-feather';
-
-import { Button } from '../../components/Button';
-import { Badge } from '../../components/Badge';
-import { Card } from '../../components/Card';
+import { format, isSameDay } from 'date-fns';
+import { de } from 'date-fns/locale';
+import { Badge } from '../Badge';
+import { Button } from '../Button';
+import { Separator } from '../Separator';
 
 export default function DayDetail({ date, calendarDays, onAddAvailability, onClose }) {
   const formattedDate = format(date, 'EEEE, d. MMMM yyyy', { locale: de });
 
-  // Suche nach Tagesdaten für das ausgewählte Datum
-  const dayData = calendarDays.find(day => isSameDay(day.date, date));
+  // Find day data for the selected date
+  const dayData = calendarDays.find((day) => isSameDay(day.date, date));
 
-  // Prüfe, ob es Einträge für diesen Tag gibt
+  // Check if there are any entries for this day
   const hasEntries = dayData && (
     dayData.hasEvent || 
     dayData.hasMeeting || 
@@ -59,7 +56,7 @@ export default function DayDetail({ date, calendarDays, onAddAvailability, onClo
           <Text style={styles.title}>{formattedDate}</Text>
         </View>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <X width={20} height={20} color="#ffffff" />
+          <Text style={styles.closeButtonText}>×</Text>
         </TouchableOpacity>
       </View>
       
@@ -75,9 +72,9 @@ export default function DayDetail({ date, calendarDays, onAddAvailability, onClo
             {dayData?.hasEvent && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Badge variant="primary" style={styles.eventBadge}>Event</Badge>
+                  <Badge style={styles.eventBadge}>Event</Badge>
                 </View>
-                <Card style={styles.detailCard}>
+                <View style={styles.detailCard}>
                   <TouchableOpacity 
                     style={styles.cardContent}
                     onPress={() => navigateToEvent(dayData.event?.id)}
@@ -94,17 +91,17 @@ export default function DayDetail({ date, calendarDays, onAddAvailability, onClo
                       <Text style={styles.detailText}>{dayData.event?.location}</Text>
                     </View>
                   </TouchableOpacity>
-                </Card>
-                <View style={styles.separator} />
+                </View>
+                <Separator style={styles.separator} />
               </View>
             )}
 
             {dayData?.hasMeeting && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Badge variant="primary" style={styles.meetingBadge}>Besprechung</Badge>
+                  <Badge style={styles.meetingBadge}>Besprechung</Badge>
                 </View>
-                <Card style={styles.detailCard}>
+                <View style={styles.detailCard}>
                   <TouchableOpacity 
                     style={styles.cardContent}
                     onPress={() => navigateToMeeting(dayData.meeting?.id)}
@@ -127,18 +124,18 @@ export default function DayDetail({ date, calendarDays, onAddAvailability, onClo
                       </Text>
                     </View>
                   </TouchableOpacity>
-                </Card>
-                <View style={styles.separator} />
+                </View>
+                <Separator style={styles.separator} />
               </View>
             )}
 
             {dayData?.hasShift && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Badge variant="primary" style={styles.shiftBadge}>Dienst</Badge>
+                  <Badge style={styles.shiftBadge}>Dienst</Badge>
                 </View>
                 {dayData.shifts?.map((shift, index) => (
-                  <Card key={index} style={styles.detailCard}>
+                  <View key={index} style={styles.detailCard}>
                     <View style={styles.cardContent}>
                       <Text style={styles.cardTitle}>{shift.type}</Text>
                       <View style={styles.detailRow}>
@@ -156,42 +153,42 @@ export default function DayDetail({ date, calendarDays, onAddAvailability, onClo
                         </TouchableOpacity>
                       )}
                     </View>
-                  </Card>
+                  </View>
                 ))}
-                <View style={styles.separator} />
+                <Separator style={styles.separator} />
               </View>
             )}
 
             {dayData?.hasAvailability && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Badge variant="destructive" style={styles.availabilityBadge}>Abwesenheit</Badge>
+                  <Badge style={styles.availabilityBadge}>Abwesenheit</Badge>
                 </View>
-                <Card style={styles.detailCard}>
+                <View style={styles.detailCard}>
                   <View style={styles.cardContent}>
                     <Text style={styles.cardTitle}>Du bist an diesem Tag abwesend</Text>
                     {dayData.availability?.reason && (
                       <Text style={styles.detailText}>{dayData.availability.reason}</Text>
                     )}
                   </View>
-                </Card>
-                <View style={styles.separator} />
+                </View>
+                <Separator style={styles.separator} />
               </View>
             )}
 
             {dayData?.hasStaffAvailability && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Badge variant="outline" style={styles.staffAvailabilityBadge}>Mitarbeiter-Abwesenheit</Badge>
+                  <Badge style={styles.staffAvailabilityBadge}>Mitarbeiter-Abwesenheit</Badge>
                 </View>
-                <Card style={styles.detailCard}>
+                <View style={styles.detailCard}>
                   <View style={styles.cardContent}>
                     <Text style={styles.cardTitle}>Mitarbeiter abwesend</Text>
                     {dayData.staffAvailability?.reason && (
                       <Text style={styles.detailText}>{dayData.staffAvailability.reason}</Text>
                     )}
                   </View>
-                </Card>
+                </View>
               </View>
             )}
           </View>
@@ -239,6 +236,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'rgba(39, 39, 42, 0.8)',
   },
+  closeButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   subtitle: {
     fontSize: 14,
     color: '#a1a1aa',
@@ -265,6 +267,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   detailCard: {
+    backgroundColor: 'rgba(39, 39, 42, 0.5)',
+    borderRadius: 8,
     marginBottom: 8,
   },
   cardContent: {
@@ -319,7 +323,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ef4444', // Rot für Abwesenheiten
   },
   staffAvailabilityBadge: {
-    borderColor: '#eab308', // Gelb für Mitarbeiter-Abwesenheiten
-    color: '#eab308',
+    backgroundColor: '#eab308', // Gelb für Mitarbeiter-Abwesenheiten
   },
 });

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
   TextInput,
   Switch,
   Platform,
@@ -13,9 +13,9 @@ import {
 import { format, addDays, isAfter } from 'date-fns';
 import { de } from 'date-fns/locale';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { X, Calendar as CalendarIcon, Loader2 } from 'react-native-feather';
+import { Calendar as CalendarIcon, Loader2 } from 'react-native-feather';
 
-import { Button } from '../../components/Button';
+import { Button } from '../Button';
 
 export default function AvailabilityForm({ onSuccess, initialDate = null, onClose }) {
   const today = new Date();
@@ -109,7 +109,7 @@ export default function AvailabilityForm({ onSuccess, initialDate = null, onClos
       <View style={styles.header}>
         <Text style={styles.title}>Abwesenheit angeben</Text>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <X width={20} height={20} color="#ffffff" />
+          <Text style={styles.closeButtonText}>×</Text>
         </TouchableOpacity>
       </View>
 
@@ -276,6 +276,11 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 20,
     backgroundColor: 'rgba(39, 39, 42, 0.8)',
+  },
+  closeButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   description: {
     fontSize: 14,

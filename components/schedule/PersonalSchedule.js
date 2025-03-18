@@ -46,7 +46,7 @@ export default function PersonalSchedule() {
       try {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
-
+        
         // Get all shifts for the current user
         const allShifts = [];
         mockSchedule.days.forEach(day => {
