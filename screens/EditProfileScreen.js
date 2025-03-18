@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronLeft } from 'react-native-feather';
 
 import { Card, CardContent, CardHeader } from '../components/Card';
+import { Button } from '../components/Button';
 import EditProfileForm from '../components/profile/EditProfileForm';
 
 export default function EditProfileScreen({ navigation }) {

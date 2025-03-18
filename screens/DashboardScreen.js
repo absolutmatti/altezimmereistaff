@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  SafeAreaView 
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { Button } from '../components/Button';
 import NewsFeed from '../components/NewsFeed';
 import GeneralFeed from '../components/GeneralFeed';
-import { Button } from '../components/Button';
 
 export default function DashboardScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('news');

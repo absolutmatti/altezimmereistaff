@@ -4,13 +4,14 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
   TouchableOpacity,
-  Modal,
   TextInput,
+  Modal,
+  ActivityIndicator,
+  Alert,
+  SafeAreaView,
   Platform
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Calendar,
@@ -32,11 +33,11 @@ import { format, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 import { mockMeetings } from '../utils/mockData';
-import { Card, CardContent, CardHeader } from '../components/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
 import { Button } from '../components/Button';
 import { Badge } from '../components/Badge';
-import { Avatar, AvatarFallback } from '../components/Avatar';
 import { Separator } from '../components/Separator';
+import { Avatar, AvatarImage, AvatarFallback } from '../components/Avatar';
 
 export default function MeetingDetailScreen({ route, navigation }) {
   const { meetingId } = route.params;
@@ -58,7 +59,7 @@ export default function MeetingDetailScreen({ route, navigation }) {
         } else {
           navigation.goBack();
           setTimeout(() => {
-            alert('Besprechung nicht gefunden.');
+            Alert.alert('Besprechung nicht gefunden.');
           }, 100);
         }
       } catch (error) {
@@ -72,11 +73,11 @@ export default function MeetingDetailScreen({ route, navigation }) {
   }, [meetingId, navigation]);
 
   const handleAddToCalendar = () => {
-    alert('Die Besprechung wurde zu deinem Kalender hinzugefügt.');
+    Alert.alert('Zum Kalender hinzugefügt', 'Die Besprechung wurde zu deinem Kalender hinzugefügt.');
   };
 
   const handleAttend = () => {
-    alert('Deine Teilnahme wurde bestätigt.');
+    Alert.alert('Teilnahme bestätigt', 'Deine Teilnahme wurde bestätigt.');
   };
 
   const handleDecline = () => {
@@ -84,7 +85,7 @@ export default function MeetingDetailScreen({ route, navigation }) {
   };
 
   const submitDecline = () => {
-    alert('Deine Absage wurde gesendet.');
+    Alert.alert('Absage gesendet', 'Deine Absage wurde gesendet.');
     setShowDeclineDialog(false);
     setDeclineReason('');
   };
@@ -400,7 +401,7 @@ export default function MeetingDetailScreen({ route, navigation }) {
                     {isOwner && meeting.status === 'past' && (
                       <TouchableOpacity
                         style={styles.editProtocolButton}
-                        onPress={() => console.log('Edit protocol')}
+                        onPress={() => navigation.navigate('EditProtocol', { meetingId: meeting.id })}
                       >
                         <Edit width={16} height={16} color="#ffffff" />
                         <Text style={styles.editProtocolText}>

@@ -3,11 +3,12 @@ import {
   View, 
   Text, 
   StyleSheet, 
+  TouchableOpacity, 
   ScrollView, 
   ActivityIndicator,
-  TouchableOpacity
+  Alert,
+  SafeAreaView
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { 
   Calendar, 
@@ -22,11 +23,10 @@ import { format, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 import { mockMeetings } from '../utils/mockData';
-import { Card, CardContent, CardHeader } from '../components/Card';
+import { Card, CardContent, CardHeader, CardFooter } from '../components/Card';
 import { Button } from '../components/Button';
 import { Badge } from '../components/Badge';
-import { Avatar, AvatarFallback } from '../components/Avatar';
-import MeetingCard from '../components/meetings/MeetingCard';
+import { Avatar, AvatarImage, AvatarFallback } from '../components/Avatar';
 
 export default function MeetingsScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
@@ -52,17 +52,20 @@ export default function MeetingsScreen({ navigation }) {
   // Handle adding a meeting to calendar
   const handleAddToCalendar = (meeting) => {
     console.log('Adding to calendar:', meeting.title);
-    // Show toast or alert
-    alert(`Die Besprechung "${meeting.title}" wurde zu deinem Kalender hinzugefügt.`);
+    Alert.alert(
+      'Zum Kalender hinzugefügt',
+      `Die Besprechung "${meeting.title}" wurde zu deinem Kalender hinzugefügt.`
+    );
   };
 
   // Handle attending/declining a meeting
-  const handleStatusChange = (meeting, status) => {
-    console.log(`Status changed to ${status} for meeting: ${meeting.title}`);
-    // Show toast or alert
-    alert(status === 'attending' 
-      ? `Du nimmst an der Besprechung "${meeting.title}" teil.`
-      : `Du hast für die Besprechung "${meeting.title}" abgesagt.`);
+  const handleStatusChange = (status) => {
+    const actionText = status === 'attending' ? 'Teilnahme bestätigt' : 'Absage gesendet';
+    const description = status === 'attending' 
+      ? 'Du nimmst an der Besprechung teil.' 
+      : 'Du hast für die Besprechung abgesagt.';
+    
+    Alert.alert(actionText, description);
   };
 
   if (loading) {
@@ -151,7 +154,7 @@ export default function MeetingsScreen({ navigation }) {
             styles.attendButton,
             attendee.status === 'attending' && styles.activeAttendButton
           ]}
-          onPress={() => handleStatusChange(meeting, 'attending')}
+          onPress={() => handleStatusChange('attending')}
           icon={<CheckCircle width={16} height={16} color={attendee.status === 'attending' ? '#FFFFFF' : '#6366f1'} />}
         >
           Teilnehmen
@@ -162,7 +165,7 @@ export default function MeetingsScreen({ navigation }) {
             styles.declineButton,
             attendee.status === 'declined' && styles.activeDeclineButton
           ]}
-          onPress={() => handleStatusChange(meeting, 'declined')}
+          onPress={() => handleStatusChange('declined')}
           icon={<XCircle width={16} height={16} color={attendee.status === 'declined' ? '#FFFFFF' : '#ef4444'} />}
         >
           Absagen
@@ -321,6 +324,56 @@ export default function MeetingsScreen({ navigation }) {
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
+  );
+}
+
+function MeetingCard({ meeting, onPress }) {
+  const formattedDate = format(parseISO(meeting.date), 'EEEE, d. MMMM yyyy', { locale: de });
+
+  // Count attendees by status
+  const attending = meeting.attendees.filter(a => a.status === 'attending').length;
+  const declined = meeting.attendees.filter(a => a.status === 'declined').length;
+  const pending = meeting.attendees.filter(a => a.status === 'pending').length;
+
+  return (
+    <Card style={styles.card}>
+      <CardHeader style={styles.header}>
+        <Text style={styles.title}>{meeting.title}</Text>
+        <Text style={styles.date}>{formattedDate}</Text>
+      </CardHeader>
+      <CardContent style={styles.content}>
+        <View style={styles.details}>
+          <View style={styles.detailRow}>
+            <Clock width={16} height={16} color="#a1a1aa" />
+            <Text style={styles.detailText}>
+              {meeting.startTime} - {meeting.endTime} Uhr
+            </Text>
+          </View>
+          <View style={styles.detailRow}>
+            <MapPin width={16} height={16} color="#a1a1aa" />
+            <Text style={styles.detailText}>{meeting.location}</Text>
+          </View>
+        </View>
+
+        <View style={styles.stats}>
+          <View style={styles.statItem}>
+            <CheckCircle width={16} height={16} color="#22c55e" />
+            <Text style={styles.statText}>{attending}</Text>
+          </View>
+          <View style={styles.statItem}>
+            <XCircle width={16} height={16} color="#ef4444" />
+            <Text style={styles.statText}>{declined}</Text>
+          </View>
+          <View style={styles.statItem}>
+            <AlertCircle width={16} height={16} color="#eab308" />
+            <Text style={styles.statText}>{pending}</Text>
+          </View>
+        </View>
+      </CardContent>
+      <CardFooter style={styles.footer}>
+        <Button onPress={onPress}>Details</Button>
+      </CardFooter>
+    </Card>
   );
 }
 
@@ -504,5 +557,45 @@ const styles = StyleSheet.create({
   },
   tabContentInner: {
     gap: 16,
+  },
+  // Meeting Card styles
+  card: {
+    marginBottom: 16,
+  },
+  header: {
+    paddingBottom: 8,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  date: {
+    fontSize: 14,
+    color: '#a1a1aa',
+    marginTop: 4,
+  },
+  content: {
+    gap: 16,
+  },
+  details: {
+    gap: 8,
+  },
+  stats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  statText: {
+    fontSize: 12,
+    color: '#a1a1aa',
+  },
+  footer: {
+    justifyContent: 'flex-end',
   },
 });
